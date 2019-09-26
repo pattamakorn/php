@@ -1,0 +1,52 @@
+<?php
+
+if ($_SERVER['REQUEST_METHOD']=='POST') {
+
+    $user = $_POST['user'];
+    $password = $_POST['password'];
+
+    require_once 'connect.php';
+
+    $sql = "SELECT * FROM member WHERE user='$user' ";
+
+    $response = mysqli_query($conn, $sql);
+
+    $result = array();
+    $result['login'] = array();
+    
+    if ( mysqli_num_rows($response) === 1 ) {
+        
+        $row = mysqli_fetch_assoc($response);
+        if ( password_verify($password, $row['password']) ) {
+            $index['username'] = $row['user'];
+            $index['password'] = $row['password'];
+            $index['fname'] = $row['fname'];
+            $index['lname'] = $row['lname'];
+            $index['yearold'] = $row['year_old'];
+            $index['tel'] = $row['tel_user'];
+            $index['area'] = $row['area_user'];
+            $index['address'] = $row['address'];
+
+            array_push($result['login'], $index);
+
+            $result['success'] = "1";
+            $result['message'] = "success";
+            echo json_encode($result);
+
+            mysqli_close($conn);
+
+        } else {
+
+            $result['success'] = "0";
+            $result['message'] = "error";
+            echo json_encode($result);
+
+            mysqli_close($conn);
+
+        }
+
+    }
+
+}
+?>
+
